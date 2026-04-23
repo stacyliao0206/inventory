@@ -12,7 +12,11 @@
     return Object.assign({}, s, { total, status, perWh });
   });
 
-  const filter = { q: "", grade: "", purpose: "", status: "" };
+  const filter = { q: "", grade: "", purpose: "", warehouse: "", status: "" };
+
+  const whOptions = data.warehouses.map(w =>
+    '<option value="' + escapeHtml(w["代碼"]) + '">' + escapeHtml(w["倉點名稱"]) + "</option>"
+  ).join("");
 
   document.getElementById("filters").innerHTML =
     '<div class="filter-bar">' +
@@ -32,6 +36,10 @@
         '<option value="課程行政">課程行政</option>' +
         '<option value="其它">其它</option>' +
       '</select>' +
+      '<select id="f-warehouse">' +
+        '<option value="">全部倉點</option>' +
+        whOptions +
+      '</select>' +
       '<select id="f-status">' +
         '<option value="">全部狀態</option>' +
         '<option value="活躍">活躍</option>' +
@@ -42,6 +50,7 @@
   document.getElementById("f-search").addEventListener("input", e => { filter.q = e.target.value; render(); });
   document.getElementById("f-grade").addEventListener("change", e => { filter.grade = e.target.value; render(); });
   document.getElementById("f-purpose").addEventListener("change", e => { filter.purpose = e.target.value; render(); });
+  document.getElementById("f-warehouse").addEventListener("change", e => { filter.warehouse = e.target.value; render(); });
   document.getElementById("f-status").addEventListener("change", e => { filter.status = e.target.value; render(); });
 
   render();
@@ -52,6 +61,7 @@
       if (q && !(r.SKU.toLowerCase().includes(q) || (r["品名"] || "").toLowerCase().includes(q))) return false;
       if (filter.grade && r["年級"] !== filter.grade) return false;
       if (filter.purpose && r["用途"] !== filter.purpose) return false;
+      if (filter.warehouse && !(r.perWh[filter.warehouse] > 0)) return false;
       if (filter.status && r["狀態"] !== filter.status) return false;
       return true;
     });
