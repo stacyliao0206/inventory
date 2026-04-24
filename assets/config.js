@@ -1,12 +1,12 @@
 const CONFIG = {
-  useLiveData: false,
+  useLiveData: true,
 
   sheets: {
-    skus: "",
-    transactions: "",
-    warehouses: "",
-    audits: "",
-    bom: ""
+  skus:         "https://docs.google.com/spreadsheets/d/e/2PACX-1vThN0RKLSU67oXkUFIixgnX73N8mPiiEchEGnkpeIpvr6K6WUsnOzubA1hwiPFc4A/pub?gid=1586570316&single=true&output=csv",
+  transactions: "https://docs.google.com/spreadsheets/d/e/2PACX-1vThN0RKLSU67oXkUFIixgnX73N8mPiiEchEGnkpeIpvr6K6WUsnOzubA1hwiPFc4A/pub?gid=1250416564&single=true&output=csv",
+  warehouses:   "https://docs.google.com/spreadsheets/d/e/2PACX-1vThN0RKLSU67oXkUFIixgnX73N8mPiiEchEGnkpeIpvr6K6WUsnOzubA1hwiPFc4A/pub?gid=1345876107&single=true&output=csv",
+  audits:       "https://docs.google.com/spreadsheets/d/e/2PACX-1vThN0RKLSU67oXkUFIixgnX73N8mPiiEchEGnkpeIpvr6K6WUsnOzubA1hwiPFc4A/pub?gid=596060522&single=true&output=csv"
+
   },
 
   camps: [
