@@ -146,7 +146,8 @@ function renderNav(active) {
     { href: "index.html", key: "dashboard", label: "儀表板" },
     { href: "items.html", key: "items", label: "品項清單" },
     { href: "calculator.html", key: "calculator", label: "組裝試算" },
-    { href: "stale.html", key: "stale", label: "呆滯品" }
+    { href: "stale.html", key: "stale", label: "呆滯品" },
+    { href: "manuals.html", key: "manuals", label: "作業文件" }
   ];
   const linksHtml = links.map(l =>
     '<a class="nav-link ' + (l.key === active ? "active" : "") + '" href="' + l.href + '">' + l.label + "</a>"
