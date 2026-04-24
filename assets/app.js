@@ -3,20 +3,22 @@ async function loadData() {
     skus: "data/skus.csv",
     transactions: "data/transactions.csv",
     warehouses: "data/warehouses.csv",
-    audits: "data/audits.csv"
+    audits: "data/audits.csv",
+    bom: "data/bom.csv"
   };
 
   try {
-    const [skus, transactions, warehouses, audits] = await Promise.all([
+    const [skus, transactions, warehouses, audits, bom] = await Promise.all([
       fetchCsv(paths.skus),
       fetchCsv(paths.transactions),
       fetchCsv(paths.warehouses),
-      fetchCsv(paths.audits)
+      fetchCsv(paths.audits),
+      fetchCsv(paths.bom)
     ]);
-    return { skus, transactions, warehouses, audits };
+    return { skus, transactions, warehouses, audits, bom };
   } catch (err) {
     showError("資料載入失敗：" + err.message);
-    return { skus: [], transactions: [], warehouses: [], audits: [] };
+    return { skus: [], transactions: [], warehouses: [], audits: [], bom: [] };
   }
 }
 
@@ -143,6 +145,7 @@ function renderNav(active) {
   const links = [
     { href: "index.html", key: "dashboard", label: "儀表板" },
     { href: "items.html", key: "items", label: "品項清單" },
+    { href: "calculator.html", key: "calculator", label: "組裝試算" },
     { href: "stale.html", key: "stale", label: "呆滯品" }
   ];
   const linksHtml = links.map(l =>
@@ -183,6 +186,13 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;");
 }
 
+function typeSkuClass(t) {
+  return { "成品": "finished", "原料": "raw", "半成品": "wip" }[t] || "";
+}
+function pillSkuType(t) {
+  const cls = typeSkuClass(t);
+  return t ? '<span class="pill ' + (cls ? "pill-sku-" + cls : "pill-neutral") + '">' + escapeHtml(t) + "</span>" : "";
+}
 function gradeClass(g) {
   return { "國小": "elementary", "國中": "junior" }[g] || "";
 }

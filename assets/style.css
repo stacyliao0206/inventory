@@ -257,6 +257,10 @@ td.center, th.center { text-align: center; }
 .pill-danger { background: var(--danger-bg); color: var(--danger); }
 .pill-neutral { background: var(--neutral-bg); color: var(--text-secondary); }
 
+.pill-sku-finished { background: #e0e7ff; color: #3730a3; }
+.pill-sku-raw { background: #fef9c3; color: #854d0e; }
+.pill-sku-wip { background: #fce7f3; color: #9f1239; }
+
 .pill-grade-elementary { background: #ccfbf1; color: #0f766e; }
 .pill-grade-junior { background: #ede9fe; color: #6d28d9; }
 

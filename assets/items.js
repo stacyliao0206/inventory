@@ -12,7 +12,7 @@
     return Object.assign({}, s, { total, status, perWh });
   });
 
-  const filter = { q: "", grade: "", purpose: "", warehouse: "", status: "" };
+  const filter = { q: "", type: "", grade: "", purpose: "", warehouse: "", status: "" };
 
   const whOptions = data.warehouses.map(w =>
     '<option value="' + escapeHtml(w["代碼"]) + '">' + escapeHtml(w["倉點名稱"]) + "</option>"
@@ -21,6 +21,11 @@
   document.getElementById("filters").innerHTML =
     '<div class="filter-bar">' +
       '<input class="search" id="f-search" placeholder="搜尋 SKU 或品名..." />' +
+      '<select id="f-type">' +
+        '<option value="">全部類型</option>' +
+        '<option value="成品">成品</option>' +
+        '<option value="原料">原料</option>' +
+      '</select>' +
       '<select id="f-grade">' +
         '<option value="">全部年級</option>' +
         '<option value="國小">國小</option>' +
@@ -48,6 +53,7 @@
     '</div>';
 
   document.getElementById("f-search").addEventListener("input", e => { filter.q = e.target.value; render(); });
+  document.getElementById("f-type").addEventListener("change", e => { filter.type = e.target.value; render(); });
   document.getElementById("f-grade").addEventListener("change", e => { filter.grade = e.target.value; render(); });
   document.getElementById("f-purpose").addEventListener("change", e => { filter.purpose = e.target.value; render(); });
   document.getElementById("f-warehouse").addEventListener("change", e => { filter.warehouse = e.target.value; render(); });
@@ -59,6 +65,7 @@
     const q = filter.q.trim().toLowerCase();
     const filtered = rows.filter(r => {
       if (q && !(r.SKU.toLowerCase().includes(q) || (r["品名"] || "").toLowerCase().includes(q))) return false;
+      if (filter.type && r["類型"] !== filter.type) return false;
       if (filter.grade && r["年級"] !== filter.grade) return false;
       if (filter.purpose && r["用途"] !== filter.purpose) return false;
       if (filter.warehouse && !(r.perWh[filter.warehouse] > 0)) return false;
@@ -73,13 +80,14 @@
         '<div class="card-title">' + filtered.length + " / " + rows.length + ' 個品項</div>' +
         '<table>' +
           '<thead><tr>' +
-            '<th>SKU</th><th>品名</th><th>年級</th><th>用途</th>' + whCols +
+            '<th>SKU</th><th>品名</th><th>類型</th><th>年級</th><th>用途</th>' + whCols +
             '<th class="num">總計</th><th class="num">安全庫存</th><th>狀態</th>' +
           '</tr></thead>' +
           '<tbody>' +
             filtered.map(r => "<tr>" +
               '<td><a class="sku-link" href="detail.html?sku=' + encodeURIComponent(r.SKU) + '">' + escapeHtml(r.SKU) + "</a></td>" +
               "<td>" + escapeHtml(r["品名"]) + "</td>" +
+              "<td>" + pillSkuType(r["類型"]) + "</td>" +
               "<td>" + pillGrade(r["年級"]) + "</td>" +
               "<td>" + pillPurpose(r["用途"]) + "</td>" +
               data.warehouses.map(w => '<td class="num ' + (r.perWh[w["代碼"]] === 0 ? "cell-muted" : "") + '">' + fmtNum(r.perWh[w["代碼"]]) + "</td>").join("") +

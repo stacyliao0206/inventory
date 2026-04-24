@@ -29,6 +29,7 @@
     '<div class="page-subtitle" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
       '<span>SKU ' + escapeHtml(item.SKU) + "</span>" +
       '<span>·</span>' +
+      pillSkuType(item["類型"]) +
       pillGrade(item["年級"]) +
       pillPurpose(item["用途"]) +
       '<span>·</span>' +
@@ -63,6 +64,54 @@
         '<div class="kpi-sub">' + (txs.length ? "上次異動 " + escapeHtml(txs[0]["日期"]) : "尚無紀錄") + "</div>" +
       "</div>" +
     "</div>";
+
+  if (item["類型"] === "成品") {
+    const bomEntries = (data.bom || []).filter(b => b["成品"] === sku);
+    if (bomEntries.length > 0) {
+      html +=
+        '<div class="card">' +
+          '<div class="card-title">組裝 BOM <span class="card-title-aside">組 1 個 ' + escapeHtml(sku) + " 需要以下原料</span></div>" +
+          '<table>' +
+            '<thead><tr><th>原料 SKU</th><th>品名</th><th class="num">每份用量</th><th class="num">原料現貨</th><th class="num">可組裝</th></tr></thead>' +
+            '<tbody>' + bomEntries.map(b => {
+              const mat = getSku(data, b["原料"]);
+              const perUnit = Number(b["用量"]) || 0;
+              const current = totalStock(stock, b["原料"]);
+              const maxCanMake = perUnit > 0 ? Math.floor(current / perUnit) : 0;
+              return "<tr>" +
+                '<td><a class="sku-link" href="detail.html?sku=' + encodeURIComponent(b["原料"]) + '">' + escapeHtml(b["原料"]) + "</a></td>" +
+                "<td>" + escapeHtml(mat ? mat["品名"] : "(未定義)") + "</td>" +
+                '<td class="num">' + fmtNum(perUnit) + " " + escapeHtml(b["單位"] || "") + "</td>" +
+                '<td class="num cell-bold">' + fmtNum(current) + "</td>" +
+                '<td class="num cell-muted">' + fmtNum(maxCanMake) + " 個</td>" +
+                "</tr>";
+            }).join("") + "</tbody>" +
+          "</table>" +
+        "</div>";
+    }
+  }
+
+  if (item["類型"] === "原料") {
+    const usedInEntries = (data.bom || []).filter(b => b["原料"] === sku);
+    if (usedInEntries.length > 0) {
+      html +=
+        '<div class="card">' +
+          '<div class="card-title">用於下列成品 <span class="card-title-aside">' + usedInEntries.length + " 個成品使用此原料</span></div>" +
+          '<table>' +
+            '<thead><tr><th>成品 SKU</th><th>品名</th><th class="num">每份用量</th><th>備註</th></tr></thead>' +
+            '<tbody>' + usedInEntries.map(b => {
+              const prod = getSku(data, b["成品"]);
+              return "<tr>" +
+                '<td><a class="sku-link" href="detail.html?sku=' + encodeURIComponent(b["成品"]) + '">' + escapeHtml(b["成品"]) + "</a></td>" +
+                "<td>" + escapeHtml(prod ? prod["品名"] : "(未定義)") + "</td>" +
+                '<td class="num">' + fmtNum(b["用量"]) + " " + escapeHtml(b["單位"] || "") + "</td>" +
+                '<td class="cell-muted">' + escapeHtml(b["備註"] || "") + "</td>" +
+                "</tr>";
+            }).join("") + "</tbody>" +
+          "</table>" +
+        "</div>";
+    }
+  }
 
   html +=
     '<div class="card">' +

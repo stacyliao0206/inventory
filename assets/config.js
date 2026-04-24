@@ -5,7 +5,8 @@ const CONFIG = {
     skus: "",
     transactions: "",
     warehouses: "",
-    audits: ""
+    audits: "",
+    bom: ""
   },
 
   camps: [
